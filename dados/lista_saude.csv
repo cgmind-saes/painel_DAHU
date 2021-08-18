@@ -1,0 +1,9 @@
+indicador;desc
+mortes_mil_partos;Mortes/1.000 partos
+mortes_por_1000_m;Mortes/1.000 mulheres
+prop_cesario;Proporção de partos por cesárea
+fecundidade_adolescente;Taxa de fecundidade adolescente
+nascidos.em.hospital;Proporção de nascimentos em hospital
+sem_consultas;Proporção de gestações sem consultas pré-natais
+insuficiente;Proporção de gestações com consultas pré-natais insuficientes
+prenatal_adequado;Proporção de gestações com consultas pré-natais adequadas
