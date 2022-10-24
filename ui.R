@@ -2,11 +2,11 @@ ui <- navbarPage(
   
   theme = shinytheme("journal"),
   collapsible = TRUE,
-  windowTitle = "Painel da Política Social",
-  title = "PAPOS",
+  windowTitle = "Painel da Rede de Atenção à Saúde Especializada",
+  title = "RAS/SAES",
   
   tabPanel(
-    "Saúde",
+    "A Rede",
     # Mapa (estilos para eliminar borda)
     tags$style(type = "text/css", "#map {height: calc(100vh - 45px)  !important;
                z-index: 500;}"),
@@ -35,8 +35,8 @@ ui <- navbarPage(
          border-radius: 2px;
          font-size: 10px",
 #       selectInput("estado","Estado",lista_estados, selected="ES"),
-       selectInput("indicador","indicador",lista_ind_saude, selected="prop_cesario"),
-       sliderInput("ano","Ano",min = 2012, max = 2020, value = 2014, ticks = F, animate=T, sep = "")
+       selectInput("indicador","indicador",lista_ind_dahu, selected="prop_cesario"),
+       sliderInput("ano","Ano",min = 2012, max = 2020, value = 2014, ticks = F, animate=F, sep = "")
      ),
 
 
@@ -140,21 +140,22 @@ ui <- navbarPage(
         ",
       bottom = 20,
       left = "48%",
-      width = "110px",
-      height = "50px",
-      tags$i(tags$table(tags$tr(tags$td(img(src = "https://worldlabourvalues.org/images/a_batallar_ideas.png",
-                                            height = "32px",
-                                            style = "-webkit-filter: grayscale(100%); filter: grayscale(80%)")),
-                                tags$td(tags$p("Rodrigo Borges - PPGPS/UFES",align="center"),colspan=3,
-                                        style = "font-size: 9px;")),
+      width = "130px",
+      height = "100px",
+      tags$i(tags$table(tags$tr(tags$td(img(src = "img/logo_sintese.png",
+                                            height = "64px",
+                                            #style = "-webkit-filter: grayscale(100%); filter: grayscale(80%)"
+                                            )),
+                                tags$td(tags$p("SAES/MS",align="center"),colspan=3,
+                                        style = "font-size: 12px;")),
                         tags$tr(tags$td(tags$p("🄯 CC-BY-NC SA 4.0", align="center"),colspan=4,
-                                        style = "font-size: 8px;"))))
+                                        style = "font-size: 10px;"))))
 
     )
 ),
 tabPanel(
   
-  "Educação",
+  "HPPs",
   # Mapa (estilos para eliminar borda)
   tags$style(type = "text/css", "#map {height: calc(100vh - 45px)  !important;
                z-index: 500;}"),
@@ -213,7 +214,7 @@ tabPanel(
 
 ),
 tabPanel(
-  "Assistência",
+  "Gráficos",
   absolutePanel(
      id= "assistencia-controles",
      top = 50,
@@ -232,7 +233,7 @@ tabPanel(
      # radioButtons(inputId = "transacoes_ind", choices = c("exports","imports","balance","unequal exchange"),selected="exports",label="Variable"),
      # radioButtons(inputId = "transacoes_agregacao", choices = c("Aggr.", "Sector"), selected = "Aggr.", label = "Type"),
      # radioButtons(inputId = "transacoes_versao", choices = c("WIOD13", "WIOD16"), selected = "WIOD13", label = "Base de dados:"),
-      sliderInput("anoass","Ano",min = 2012, max = 2020, value = 2014, ticks = F, animate=T)
+      #sliderInput("anoass","Ano",min = 2012, max = 2020, value = 2014, ticks = F, animate=T)
   ),
   # absolutePanel(
   #   width="30%",

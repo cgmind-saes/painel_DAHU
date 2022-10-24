@@ -11,29 +11,8 @@ source("requ.R")
 
 ## Carrega os dados
 ######
-#estados< read.csv2...
-ecd_saude <-read.csv2("dados/2012-2017-indicadores_saude_brutos.csv")
-lista_ind_saude <- read_csv2("dados/lista_saude.csv")
-names(lista_ind_saude$indicador) <- lista_ind_saude$desc
-
-lista_ind_saude <- lista_ind_saude$indicador
-
-lista_estados <- read_csv("https://raw.githubusercontent.com/kelvins/Municipios-Brasileiros/master/csv/estados.csv")
-
-
-ecd_ed <- read_csv2("dados/2012-2017-tab_ecd_ed.csv")[-1]
-
-lista_educacao <- unique(ecd_ed$indicador)
-names(lista_educacao) <- gsub("_"," ",lista_educacao)
-
-ecd_ed <- ecd_ed %>% pivot_wider(names_from=indicador, values_from= value)
-ecd_ed$cod_mun <- as.character(ecd_ed$cod_mun)
-#Mapa municipios
-shp <- get_brmap("City")
-shp$cod_mun <- as.character(trunc(shp$City/10))
-
-shp_sf <- st_as_sf(shp)%>%st_transform(4326)
-
+source("R/paletas.R")
+source("R/estaticos.R")
 
 
 

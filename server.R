@@ -8,31 +8,34 @@ server <- function(input, output, session) {
     # Use leaflet() here, and only include aspects of the map that
     # won't need to change dynamically (at least, not unless the
     # entire map is being torn down and recreated).
-    shp_sfil <-left_join(shp_sf,filter(ecd_saude,ano==input$ano))
+    shp_sfil <-left_join(shp_sf,dplyr::filter(inds_dahu,ano==input$ano))
 
     pal <- colorNumeric(palette = "Reds", domain = shp_sfil[[input$indicador]])
     leaflet(shp_sfil,
       options = leafletOptions(zoomControl = FALSE)) %>%
       addProviderTiles(providers$CartoDB.Positron) %>%
-      addPolygons(data=shp_sfil,
-                  smoothFactor = 0.5,
-                  fillOpacity = 0.5,
-                  weight = 0.5,
-                  color = ~pal(get(input$indicador)),
-                  opacity = 0.8,
-                  highlightOptions = highlightOptions(color = "gray",
-                                                      weight = 2,
-                                                      bringToFront = T),
-                  popup = ~paste0(sep = " ",
-                                  "<b>Cidade: </b>",Município,"<br>",
-                                  "<b>Proporção de partos cesáreos: </b>",round(prop_cesario*100,2),"% <br>",
-                                  "<b>Proporção de gestações com acompanhamento pré-natal adequado:</b>",round(prenatal_adequado*100,2),"% <br>"),
-                  label = ~`Município`) %>%
-                  addLegend("bottomright",
-                                title = "Escala",
-                                pal = pal,
-                                values = as.formula(paste0("~",input$indicador)),
-                                opacity = 0.8)    %>%
+      addMarkers(data=sf::st_as_sf(cnes_abr_geo,coords = c("NU_LATITUDE","NU_LONGITUDE")))%>%
+      addPolygons(data=regioes_saude_mapa,fillOpacity = 0.2,smoothFactor = 0.7,
+                  color = paleta5[4])%>%
+      # addPolygons(data=shp_sfil,
+      #             smoothFactor = 0.5,
+      #             fillOpacity = 0.5,
+      #             weight = 0.5,
+      #             color = ~pal(get(input$indicador)),
+      #             opacity = 0.8,
+      #             highlightOptions = highlightOptions(color = "gray",
+      #                                                 weight = 2,
+      #                                                 bringToFront = T),
+      #             popup = ~paste0(sep = " ",
+      #                             "<b>Cidade: </b>",Município,"<br>",
+      #                             "<b>Proporção de partos cesáreos: </b>",round(prop_cesario*100,2),"% <br>",
+      #                             "<b>Proporção de gestações com acompanhamento pré-natal adequado:</b>",round(prenatal_adequado*100,2),"% <br>"),
+      #             label = ~`Município`) %>%
+      #             addLegend("bottomright",
+      #                           title = "Escala",
+      #                           pal = pal,
+      #                           values = as.formula(paste0("~",input$indicador)),
+      #                           opacity = 0.8)    %>%
                     addTiles() 
   })
   
@@ -225,7 +228,7 @@ server <- function(input, output, session) {
 #   
   # output$estado <- renderDataTable(
   # 
-  #  ecd_saude%>%filter(),
+  #  inds_dahu%>%filter(),
   #   # rownames = TRUE,
   #   #    spacing = "xs",
   #   #    striped = TRUE,
@@ -243,7 +246,7 @@ server <- function(input, output, session) {
   # )
 
   output$serie_estado <- renderPlotly({
-    dados <- ecd_saude%>%filter(ano == input$ano %>% grepl("^32",cod_mun))%>%select_(input$indicador)
+    dados <- inds_dahu[inds_dahu$ano == input$ano & grepl("^32",inds_dahu$cod_mun),]%>%select_(input$indicador)
     plotaserie(dados)
   })
 

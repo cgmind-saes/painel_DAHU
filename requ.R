@@ -1,10 +1,7 @@
 library(tidyverse)
-library(brazilmaps)
-library(sf)
 library(shinydashboard)
 library(data.table)
 library(shinyjs)
-library(rnaturalearth)
 library(treemap)
 library(plotly)
 library(dashboardthemes)
@@ -15,6 +12,15 @@ library(scales)
 library(d3treeR)
 library(DT)
 library(apputils)
-library(leaflet)
-library(rworldmap)
 
+library(rjson)
+library(RJDBC)
+library(janitor)
+
+
+library(leaflet)
+library(sf)
+
+library(rnaturalearth)
+library(rworldmap)
+library(brazilmaps)
