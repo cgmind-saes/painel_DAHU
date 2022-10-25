@@ -31,7 +31,7 @@ con_pd  <-  dbConnect(jdbcDriver, pd_ender,Sys.getenv("usrjp"),Sys.getenv("senha
 
 
 # ####Lista CNES abril
-# tb_estabs <- dbGetQuery(con_cnes,'select * from DBCNESRJ.TB_ESTABELECIMENTO')
+#tb_estabs <- dbGetQuery(con_cnes,'select * from DBCNESRJ.TB_ESTABELECIMENTO')
 # 
 # 
 # tb_estabs%<>%mutate(across(contains("CO_"),as.numeric),across(contains("NU_"),as.numeric))
@@ -51,5 +51,28 @@ con_pd  <-  dbConnect(jdbcDriver, pd_ender,Sys.getenv("usrjp"),Sys.getenv("senha
 # 
 # 
 # 
-# cnes_abr_geo <- cnes_val_abril%>%dplyr::filter(!is.na(NU_LATITUDE) & !is.na(NU_LONGITUDE))
+#cnes_abr_geo <- cnes_val_abril%>%dplyr::filter(!is.na(NU_LATITUDE) & !is.na(NU_LONGITUDE))
+
+# geo_falta <- cnes_val_abr %>%dplyr::filter(is.na(NU_LATITUDE))%>%select(CO_CNES,CO_CEP)
+# 
+# 
+#geo_falta$CO_CEP <- sprintf("%08d",geo_falta$CO_CEP)
+
+
+
+
+
+
+
+# geo_falta%<>%dplyr::left_join(latefalta[!duplicated(latefalta$cep),], by = c("CO_CEP" = "cep"))
+# 
+# cnes_abr_geo[is.na(cnes_abr_geo$NU_LATITUDE),c("NU_LATITUDE","NU_LONGITUDE")] <- geo_falta[7:8]
+# 
+# geo_falta2 <- cnes_val_abr %>%dplyr::filter(is.na(NU_LONGITUDE))%>%select(CO_CNES,CO_CEP)
+
+
+##regiões de saúde
+
+#reg_saude <- dbGetQuery(con_pd,"select * from CNES_SNP.TB_GEO_REGIAO_SAUDE")
+
 

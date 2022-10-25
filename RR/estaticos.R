@@ -1,3 +1,17 @@
+coordsestados = function(dadosmun) {  
+  # Primeiro precisamos dos dados de latitude e longitude das cidades analisadas. 
+  
+  urlfile <- "https://raw.githubusercontent.com/kelvins/Municipios-Brasileiros/master/csv/municipios.csv"
+  cities_lat_lng <- read.csv(urlfile,encoding = "UTF-8", col.names = c("COD_IBGE", "Cidade","lat","lng","Capital","Codigo_UF"))
+  # é necessário se certificar que o código de cada cidade estará em formato de texto, para o que a função left_join funcione. 
+  cities_lat_lng$COD_IBGE <- as.character(cities_lat_lng$COD_IBGE)
+  dadosmun <- left_join(dadosmun, cities_lat_lng, by = c("city_ibge_code" = "COD_IBGE"))  
+}
+
+
+
+
+
 portes <- c(20,50,100,250,500,1e5)
 names(portes) <- c("Pequeno Porte I","Pequeno Porte II","Médio Porte I","Médio Porte II",
                    "Grande Porte I","Grande Porte II")
@@ -77,4 +91,58 @@ shp <- get_brmap("City")
 shp$cod_mun <- as.character(trunc(shp$City/10))
 
 shp_sf <- st_as_sf(shp)%>%st_transform(4326)
+
+cnes_abr_geo <- readRDS("dados/2022-10-23-cnes_abr22_validos.rds")
+
+
+cnes_abr_geo %<>%dplyr::filter(!is.na(NU_LATITUDE) & !is.na(NU_LONGITUDE))
+
+geocnes <- sf::st_as_sf(cnes_abr_geo%>%dplyr::filter(!is.na(NU_LONGITUDE)),
+                        coords = c("NU_LONGITUDE","NU_LATITUDE"),
+                        crs = sf::st_crs(3857))
+
+
+
+tp_estabs <- read_csv2("dados/tipos_unidades_todos.csv")
+
+tp_estabs%<>%mutate(aes_destaque = case_when(
+  TP_UNIDADE %in% c(1,2,4,5,7,15,20,21,36,39,42,62,71,73) ~ 1,
+  T ~ 0
+))
+
+tp_icones <- read_csv("dados/estabelecimentos_icones.csv")
+
+tp_estabs%<>%left_join(tp_icones[c("código","ícone")],by = c("TP_UNIDADE" = "código"))
+
+tp_estabs[is.na(tp_estabs$ícone),]$ícone <- "star-of-life"
+#tp_estabs$ícone <- paste0("fa-solid fa-",tp_estabs$ícone)
+
+geocnes$TP_UNIDADE <- as.numeric(geocnes$TP_UNIDADE)
+
+geocnes%<>%left_join(tp_estabs)
+
+geocnesf <- sample_n(geocnes%>%dplyr::filter(grepl("^52",CO_MUNICIPIO_GESTOR),
+                                    aes_destaque == 1)
+                     ,1e3)
+
+
+# geocnesf$ícone <- lapply(paste0("fa-",geocnesf$ícone),makeAwesomeIcon,library = "fa",
+#                          iconColor = "orange")
+
+
+marcacor <- c("red", "darkred", "lightred", "orange", "beige", "green", "darkgreen", "lightgreen", "blue", "darkblue", "lightblue", "purple", "darkpurple", "pink", "cadetblue", "white", "gray", "lightgray", "black")
+
+icones_mapa <- mapply(makeAwesomeIcon,paste0("fa-",unique(tp_estabs$ícone)),library = "fa",
+                            iconColor = c(paleta7,paleta6[1:3]),
+                      markerColor = marcacor[sample(1:19,15)],squareMarker = T,
+                      SIMPLIFY=F)
+
+class(icones_mapa) <- "leaflet_awesome_icon_set"
+
+names(icones_mapa) <- unique(tp_estabs$ícone)
+
+
+
+
+
 

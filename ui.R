@@ -1,6 +1,6 @@
 ui <- navbarPage(
   
-  theme = shinytheme("journal"),
+  theme = bs_theme(version = 4, bootswatch = "minty"),
   collapsible = TRUE,
   windowTitle = "Painel da Rede de Atenção à Saúde Especializada",
   title = "RAS/SAES",
@@ -10,7 +10,10 @@ ui <- navbarPage(
     # Mapa (estilos para eliminar borda)
     tags$style(type = "text/css", "#map {height: calc(100vh - 45px)  !important;
                z-index: 500;}"),
+    tags$style(type="text/css",".awesome-marker {background: rgba(230,230,230,0.5) !important;}"),
+    tags$style(type="text/css",".awesome-marker i{font-size: 20px !important;}"),
     leafletOutput("map", width = "100%"),
+    tags$style("@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css);"),
     tags$style(type = "text/css", ".container-fluid {padding-left:0px;padding-right:0px;}"),
     tags$style(type = "text/css", ".navbar {margin-bottom: 0px;}"),
     tags$style(type = "text/css", ".container-fluid .navbar-header .navbar-brand {margin-left: 0px;}"),
@@ -36,7 +39,8 @@ ui <- navbarPage(
          font-size: 10px",
 #       selectInput("estado","Estado",lista_estados, selected="ES"),
        selectInput("indicador","indicador",lista_ind_dahu, selected="prop_cesario"),
-       sliderInput("ano","Ano",min = 2012, max = 2020, value = 2014, ticks = F, animate=F, sep = "")
+       uiOutput("mesel"),
+#sliderInput("ano","Ano",min = 2012, max = 2020, value = 2014, ticks = F, animate=F, sep = "")
      ),
 
 
@@ -83,34 +87,6 @@ ui <- navbarPage(
 
                        )))
                      ),
-        #              absolutePanel(
-        #                top = "35%",
-        #                height = "75%",
-        #                right = "1.5%",
-        #                width = "22%",
-        #                style =
-        #                  "background-color: rgba(255,255,255,0.05);
-        # z-index: 500;
-        # padding: 0;
-        # box-shadow: 0 0 0px rgba(0,0,0,0);
-        # border-radius: none",
-        #                div(textOutput("titulo_detalhamento_pais"), align = "center",
-        #                    style = "font-size:16px; font-weight: bold;background-color: rgba(255,255,255,0.2)"),
-        #                div(textOutput("subtitulo_detalhamento_pais"), align = "center",
-        #                    style = "background-color: rgba(255,255,255,0.2)"),
-        #                tabsetPanel(
-        #                  tabPanel(
-        #                    "WIOD.13",
-        #                    dataTableOutput("setores_pais_13")
-        #                  ),
-        #                  tabPanel(
-        #                    "WIOD.16",
-        #                    dataTableOutput("setores_pais_16")
-        #                  )
-        #                )
-        #              ),
-
-
                      absolutePanel(
                        style =
                          "background-color: rgba(255,255,255,0);
@@ -154,66 +130,6 @@ ui <- navbarPage(
     )
 ),
 tabPanel(
-  
-  "HPPs",
-  # Mapa (estilos para eliminar borda)
-  tags$style(type = "text/css", "#map {height: calc(100vh - 45px)  !important;
-               z-index: 500;}"),
-  leafletOutput("maped", width = "100%"),
-  tags$style(type = "text/css", ".container-fluid {padding-left:0px;padding-right:0px;}"),
-  tags$style(type = "text/css", ".navbar {margin-bottom: 0px;}"),
-  tags$style(type = "text/css", ".container-fluid .navbar-header .navbar-brand {margin-left: 0px;}"),
-  tags$style(type = "text/css", ".js-plotly-plot .plotly .main-svg:first-of-type {background: rgba(255,255,255,0.4) !important;}"),
-  tags$style(type = "text/css", "tr.odd {background-color: rgba(249,249,249,0.7) !important};"),
-  tags$style(type = "text/css", "tr.even {background-color: rgba(255,255,255,0.7) !important};"),
-  tags$style(type = "text/css", "tr.even.selected {background-color: rgba(176, 190, 217,0.6) !important};"),
-  absolutePanel(
-    id="controls",
-    top = 50,
-    right = "1.5%",
-    width = "22%",
-    height = "28%",
-    class = "panel panel-default",
-    style =
-      "background-color: rgba(255,255,255,0.2);
-        z-index: 504;
-        padding: 0;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
-        border-radius: 2px;
-        font-size: 10px",
-#    selectInput("pais","Country",lista_paises, selected="BRA"),
-    selectInput("indicadored","indicador",lista_educacao, selected="taxa_cobertura_creche"),
-    sliderInput("anoed","Ano",min = 2012, max = 2020, value = 2014, ticks = F, animate=T),
-#    checkboxGroupInput(inputId = "versao",
-#                   choices = lista_versoes,
-#                   #selected =  lista_versoes,
-#                   label = "Base de dados:"),
-#     selectInput(inputId = "paises",
-            # label = "Países:",
-            # choices = lista_paises,
-            # selected = c("BRA","CHN","USA"),
-            # multiple = TRUE)
-  ),
-  # absolutePanel(
-  #   "Série Temporal",
-  #   width = "70%",
-  #   height = "43%",
-  #   top = 50,
-  #   left = "1.5%",
-  #   class = "panel panel-default",
-  #   plotlyOutput("serie", height="85%")
-  # ),
-  # absolutePanel(
-  #     top = "54%",
-  #     left = "1.5%",
-  #     width = "70%",
-  #     height = "35%",
-  #     class = "panel panel-default",
-  #     dataTableOutput("indicadores")
-  #   ),
-
-),
-tabPanel(
   "Gráficos",
   absolutePanel(
      id= "assistencia-controles",
@@ -229,33 +145,7 @@ tabPanel(
         box-shadow: 0 0 10px rgba(0,0,0,0.2);
         border-radius: 2px;
         font-size: 10px",
-     # selectInput("paistrade","Country",lista_paises, selected="BRA"),
-     # radioButtons(inputId = "transacoes_ind", choices = c("exports","imports","balance","unequal exchange"),selected="exports",label="Variable"),
-     # radioButtons(inputId = "transacoes_agregacao", choices = c("Aggr.", "Sector"), selected = "Aggr.", label = "Type"),
-     # radioButtons(inputId = "transacoes_versao", choices = c("WIOD13", "WIOD16"), selected = "WIOD13", label = "Base de dados:"),
-      #sliderInput("anoass","Ano",min = 2012, max = 2020, value = 2014, ticks = F, animate=T)
   ),
-  # absolutePanel(
-  #   width="30%",
-  #   top=50,
-  #   height="30%",
-  #   left="1.5%",
-  #   d3tree3Output("exportacoes_monetarias")
-  # ),
-  # absolutePanel(
-  #   width="30%",
-  #   top=50,
-  #   height="30%",
-  #   left="33.5%",
-  #   d3tree3Output("exportacoes_valores")
-  #   ),
-  # absolutePanel(
-  #   width="30%",
-  #   bottom=50,
-  #   height="30%",
-  #   left="1.5%",
-  #   d3tree3Output("exportacoes_transferencias")
-  # )
   )
 )
 

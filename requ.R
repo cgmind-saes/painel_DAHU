@@ -1,23 +1,28 @@
 library(tidyverse)
-library(shinydashboard)
 library(data.table)
-library(shinyjs)
 library(treemap)
 library(plotly)
-library(dashboardthemes)
-library(shinythemes)
-library(hrbrthemes)
-library(ggthemes)
 library(scales)
 library(d3treeR)
 library(DT)
 library(apputils)
+library(httr)
+library(magrittr)
+
 
 library(rjson)
 library(RJDBC)
 library(janitor)
 
+library(ggthemes)
+library(dashboardthemes)
+library(shinythemes)
+library(hrbrthemes)
 
+
+library(shinydashboard)
+library(shinyjs)
+library(bslib)
 library(leaflet)
 library(sf)
 
