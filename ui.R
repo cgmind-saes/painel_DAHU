@@ -8,12 +8,13 @@ ui <- navbarPage(
   tabPanel(
     "A Rede",
     # Mapa (estilos para eliminar borda)
-    tags$style(type = "text/css", "#map {height: calc(100vh - 45px)  !important;
+    tags$style(type = "text/css", "#map {height: calc(100vh - 48px)  !important;
                z-index: 500;}"),
     tags$style(type="text/css",".awesome-marker {background: rgba(230,230,230,0.5) !important;}"),
     tags$style(type="text/css",".awesome-marker i{font-size: 20px !important;}"),
     leafletOutput("map", width = "100%"),
     tags$style("@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css);"),
+    tags$style("@import url(styles.css);"),
     tags$style(type = "text/css", ".container-fluid {padding-left:0px;padding-right:0px;}"),
     tags$style(type = "text/css", ".navbar {margin-bottom: 0px;}"),
     tags$style(type = "text/css", ".container-fluid .navbar-header .navbar-brand {margin-left: 0px;}"),
@@ -115,7 +116,7 @@ ui <- navbarPage(
         border-radius: 5px;
         ",
       bottom = 20,
-      left = "48%",
+      left = "2%",
       width = "130px",
       height = "100px",
       tags$i(tags$table(tags$tr(tags$td(img(src = "img/logo_sintese.png",

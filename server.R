@@ -5,40 +5,379 @@ server <- function(input, output, session) {
                        
   
   output$map <- renderLeaflet({
-    # Use leaflet() here, and only include aspects of the map that
-    # won't need to change dynamically (at least, not unless the
-    # entire map is being torn down and recreated).
-    #dplyr::filter(inds_dahu,ano==input$ano)
-    shp_sfil <-left_join(shp_sf,inds_dahu)
 
-    pal <- colorNumeric(palette = "Reds", domain = shp_sfil[[input$indicador]])
     leaflet(shp_sf,
       options = leafletOptions(zoomControl = T)) %>%
       addProviderTiles(providers$CartoDB.Positron) %>%
-       addAwesomeMarkers(data=geocnesf,icon = ~icones_mapa[ícone],
-                         label =~NO_RAZAO_SOCIAL)%>%
-      addPolygons(data=regioes_saude_mapa,fillOpacity = 0.2,smoothFactor = 0.7,
-                  color = paleta5[4],weight=0.7)#%>%
-      # addPolygons(data=shp_sfil,
-      #             smoothFactor = 0.5,
-      #             fillOpacity = 0.5,
-      #             weight = 0.5,
-      #             color = ~pal(get(input$indicador)),
-      #             opacity = 0.8,
-      #             highlightOptions = highlightOptions(color = "gray",
-      #                                                 weight = 2,
-      #                                                 bringToFront = T),
-      #             popup = ~paste0(sep = " ",
-      #                             "<b>Cidade: </b>",Município,"<br>",
-      #                             "<b>Proporção de partos cesáreos: </b>",round(prop_cesario*100,2),"% <br>",
-      #                             "<b>Proporção de gestações com acompanhamento pré-natal adequado:</b>",round(prenatal_adequado*100,2),"% <br>"),
-      #             label = ~`Município`) %>%
-      #             addLegend("bottomright",
-      #                           title = "Escala",
-      #                           pal = pal,
-      #                           values = as.formula(paste0("~",input$indicador)),
-      #                           opacity = 0.8)    %>%
- #                   addTiles() 
+      addAwesomeMarkers(data=geocnesf%>%dplyr::filter(TP_UNIDADE == 5),icon = ~icones_mapa[ícone],
+                        label =~paste(str_to_title(NO_FANTASIA),"com",habs_incs,"habilitações e incentivos\n de interesse da AES"),
+                        options = markerOptions(habs = ~ifelse(is.na(habs_incs),0,habs_incs),
+                                                tp = pluraltp(str_to_title(tp_estabs[tp_estabs$TP_UNIDADE == 5,]$NO_TP_UNIDADE))),
+                        clusterOptions = markerClusterOptions(
+                          iconCreateFunction =   
+                            ~JS(paste0("function (cluster) {    
+                          var conta = cluster.getAllChildMarkers();
+                          var contaa = conta.length;
+                          var c = ' marker-cluster';
+                          /*if (contaa < 10) {
+                                c+= 'small';
+                          } else if (contaa <100) {
+                                c+= 'medium';
+                          } else {
+                                c+= 'large';
+                          }*/
+                          var habs = 0;
+                          for (i =0; i<conta.length;i++) {
+                          habs +=Number(conta[i].options.habs)
+                          }
+                          
+                          var tp = conta[0].options.tp;
+                          
+
+                          return L.divIcon({ 
+                            html: '<div style = \"background-color: ",pegacor(moda(paleta),moda(cor)),";\"><center title=\"'+contaa+' '+tp+' com '+habs+' habilitações\"><i class = \"fa-solid fa-",
+                                       moda(ícone),"\"></i><br>'+contaa+'</center></div>', 
+                            className: 'marker-cluster' + c, 
+                            iconSize: new L.Point(38, 38) });
+                          }"
+                            ))),
+                        group = "Hospitais") %>%
+      addAwesomeMarkers(data=geocnesf%>%dplyr::filter(TP_UNIDADE == 7),icon = ~icones_mapa[ícone],
+                        label =~paste(str_to_title(NO_FANTASIA),"com",habs_incs,"habilitações e incentivos\n de interesse da AES"),
+                        options = markerOptions(habs = ~ifelse(is.na(habs_incs),0,habs_incs),tp = pluraltp(str_to_title(tp_estabs[tp_estabs$TP_UNIDADE ==7,]$NO_TP_UNIDADE))),
+                        clusterOptions = markerClusterOptions(
+                          iconCreateFunction =   
+                            ~JS(paste0("function (cluster) {    
+                          var conta = cluster.getAllChildMarkers();
+                          var contaa = conta.length;
+                          var c = ' marker-cluster';
+                          /*if (contaa < 10) {
+                                c+= 'small';
+                          } else if (contaa <100) {
+                                c+= 'medium';
+                          } else {
+                                c+= 'large';
+                          }*/
+                          var habs = 0;
+                          for (i =0; i<conta.length;i++) {
+                          habs +=Number(conta[i].options.habs)
+                          }
+                          
+                          var tp = conta[0].options.tp;
+                          
+
+                          return L.divIcon({ 
+                            html: '<div style = \"background-color: ",pegacor(moda(paleta),moda(cor)),";\"><center title=\"'+contaa+' '+tp+' com '+habs+' habilitações\"><i class = \"fa-solid fa-",
+                                       moda(ícone),"\"></i><br>'+contaa+'</center></div>', 
+                            className: 'marker-cluster' + c, 
+                            iconSize: new L.Point(38, 38) });
+                          }"
+                            ))),
+                        group = "Hospitais") %>%
+      addAwesomeMarkers(data=geocnesf%>%dplyr::filter(TP_UNIDADE == 15),icon = ~icones_mapa[ícone],
+                        label =~paste(str_to_title(NO_FANTASIA),"com",habs_incs,"habilitações e incentivos\n de interesse da AES"),
+                        options = markerOptions(habs = ~ifelse(is.na(habs_incs),0,habs_incs),tp = pluraltp(str_to_title(tp_estabs[tp_estabs$TP_UNIDADE ==15,]$NO_TP_UNIDADE))),
+                        clusterOptions = markerClusterOptions(
+                          iconCreateFunction =   
+                            ~JS(paste0("function (cluster) {    
+                          var conta = cluster.getAllChildMarkers();
+                          var contaa = conta.length;
+                          var c = ' marker-cluster';
+                          /*if (contaa < 10) {
+                                c+= 'small';
+                          } else if (contaa <100) {
+                                c+= 'medium';
+                          } else {
+                                c+= 'large';
+                          }*/
+                          var habs = 0;
+                          for (i =0; i<conta.length;i++) {
+                          habs +=Number(conta[i].options.habs)
+                          }
+                          
+                          var tp = conta[0].options.tp;
+                          
+
+                          return L.divIcon({ 
+                            html: '<div style = \"background-color: ",pegacor(moda(paleta),moda(cor)),";\"><center title=\"'+contaa+' '+tp+' com '+habs+' habilitações\"><i class = \"fa-solid fa-",
+                                       moda(ícone),"\"></i><br>'+contaa+'</center></div>', 
+                            className: 'marker-cluster' + c, 
+                            iconSize: new L.Point(38, 38) });
+                          }"
+                            ))),
+                        group = "Hospitais") %>%
+      addAwesomeMarkers(data=geocnesf%>%dplyr::filter(TP_UNIDADE == 20),icon = ~icones_mapa[ícone],
+                        label =~paste(str_to_title(NO_FANTASIA),"com",habs_incs,"habilitações e incentivos\n de interesse da AES"),
+                        options = markerOptions(habs = ~ifelse(is.na(habs_incs),0,habs_incs),tp = pluraltp(str_to_title(tp_estabs[tp_estabs$TP_UNIDADE==20,]$NO_TP_UNIDADE))),
+                        clusterOptions = markerClusterOptions(
+                          iconCreateFunction =   
+                            ~JS(paste0("function (cluster) {    
+                          var conta = cluster.getAllChildMarkers();
+                          var contaa = conta.length;
+                          var c = ' marker-cluster';
+                          /*if (contaa < 10) {
+                                c+= 'small';
+                          } else if (contaa <100) {
+                                c+= 'medium';
+                          } else {
+                                c+= 'large';
+                          }*/
+                          var habs = 0;
+                          for (i =0; i<conta.length;i++) {
+                          habs +=Number(conta[i].options.habs)
+                          }
+                          
+                          var tp = conta[0].options.tp;
+                          
+
+                          return L.divIcon({ 
+                            html: '<div style = \"background-color: ",pegacor(moda(paleta),moda(cor)),";\"><center title=\"'+contaa+' '+tp+' com '+habs+' habilitações\"><i class = \"fa-solid fa-",
+                                       moda(ícone),"\"></i><br>'+contaa+'</center></div>', 
+                            className: 'marker-cluster' + c, 
+                            iconSize: new L.Point(38, 38) });
+                          }"
+                            ))),
+                        group = "Hospitais") %>%
+      addAwesomeMarkers(data=geocnesf%>%dplyr::filter(TP_UNIDADE == 21),icon = ~icones_mapa[ícone],
+                        label =~paste(str_to_title(NO_FANTASIA),"com",habs_incs,"habilitações e incentivos\n de interesse da AES"),
+                        options = markerOptions(habs = ~ifelse(is.na(habs_incs),0,habs_incs),tp = pluraltp(str_to_title(tp_estabs[tp_estabs$TP_UNIDADE==21,]$NO_TP_UNIDADE))),
+                        clusterOptions = markerClusterOptions(
+                          iconCreateFunction =   
+                            ~JS(paste0("function (cluster) {    
+                          var conta = cluster.getAllChildMarkers();
+                          var contaa = conta.length;
+                          var c = ' marker-cluster';
+                          /*if (contaa < 10) {
+                                c+= 'small';
+                          } else if (contaa <100) {
+                                c+= 'medium';
+                          } else {
+                                c+= 'large';
+                          }*/
+                          var habs = 0;
+                          for (i =0; i<conta.length;i++) {
+                          habs +=Number(conta[i].options.habs)
+                          }
+                          
+                          var tp = conta[0].options.tp;
+                          
+
+                          return L.divIcon({ 
+                            html: '<div style = \"background-color: ",pegacor(moda(paleta),moda(cor)),";\"><center title=\"'+contaa+' '+tp+' com '+habs+' habilitações\"><i class = \"fa-solid fa-",
+                                       moda(ícone),"\"></i><br>'+contaa+'</center></div>', 
+                            className: 'marker-cluster' + c, 
+                            iconSize: new L.Point(38, 38) });
+                          }"
+                            ))),
+                        group = "Hospitais") %>%
+      addAwesomeMarkers(data=geocnesf%>%dplyr::filter(TP_UNIDADE == 36),icon = ~icones_mapa[ícone],
+                        label =~paste(str_to_title(NO_FANTASIA),"com",habs_incs,"habilitações e incentivos\n de interesse da AES"),
+                        options = markerOptions(habs = ~ifelse(is.na(habs_incs),0,habs_incs),tp = pluraltp(str_to_title(tp_estabs[tp_estabs$TP_UNIDADE==36,]$NO_TP_UNIDADE))),
+                        clusterOptions = markerClusterOptions(
+                          iconCreateFunction =   
+                            ~JS(paste0("function (cluster) {    
+                          var conta = cluster.getAllChildMarkers();
+                          var contaa = conta.length;
+                          var c = ' marker-cluster';
+                          /*if (contaa < 10) {
+                                c+= 'small';
+                          } else if (contaa <100) {
+                                c+= 'medium';
+                          } else {
+                                c+= 'large';
+                          }*/
+                          var habs = 0;
+                          for (i =0; i<conta.length;i++) {
+                          habs +=Number(conta[i].options.habs)
+                          }
+                          
+                          var tp = conta[0].options.tp;
+                          
+
+                          return L.divIcon({ 
+                            html: '<div style = \"background-color: ",pegacor(moda(paleta),moda(cor)),";\"><center title=\"'+contaa+' '+tp+' com '+habs+' habilitações\"><i class = \"fa-solid fa-",
+                                       moda(ícone),"\"></i><br>'+contaa+'</center></div>', 
+                            className: 'marker-cluster' + c, 
+                            iconSize: new L.Point(38, 38) });
+                          }"
+                            ))),
+                        group = "Clínicas/Unidades de apoio diagnose e terapia\nSADT ISOLADO") %>%
+      addAwesomeMarkers(data=geocnesf%>%dplyr::filter(TP_UNIDADE == 39),icon = ~icones_mapa[ícone],
+                        label =~paste(str_to_title(NO_FANTASIA),"com",habs_incs,"habilitações e incentivos\n de interesse da AES"),
+                        options = markerOptions(habs = ~ifelse(is.na(habs_incs),0,habs_incs),tp = pluraltp(str_to_title(tp_estabs[tp_estabs$TP_UNIDADE==39,]$NO_TP_UNIDADE))),
+                        clusterOptions = markerClusterOptions(
+                          iconCreateFunction =   
+                            ~JS(paste0("function (cluster) {    
+                          var conta = cluster.getAllChildMarkers();
+                          var contaa = conta.length;
+                          var c = ' marker-cluster';
+                          /*if (contaa < 10) {
+                                c+= 'small';
+                          } else if (contaa <100) {
+                                c+= 'medium';
+                          } else {
+                                c+= 'large';
+                          }*/
+                          var habs = 0;
+                          for (i =0; i<conta.length;i++) {
+                          habs +=Number(conta[i].options.habs)
+                          }
+                          
+                          var tp = conta[0].options.tp;
+                          
+
+                          return L.divIcon({ 
+                            html: '<div style = \"background-color: ",pegacor(moda(paleta),moda(cor)),";\"><center title=\"'+contaa+' '+tp+' com '+habs+' habilitações\"><i class = \"fa-solid fa-",
+                                       moda(ícone),"\"></i><br>'+contaa+'</center></div>', 
+                            className: 'marker-cluster' + c, 
+                            iconSize: new L.Point(38, 38) });
+                          }"
+                            ))),
+                        group = "Clínicas/Unidades de apoio diagnose e terapia\nSADT ISOLADO") %>%
+          addAwesomeMarkers(data=geocnesf%>%dplyr::filter(TP_UNIDADE == 42),icon = ~icones_mapa[ícone],
+                        label =~paste(str_to_title(NO_FANTASIA),"com",habs_incs,"habilitações e incentivos\n de interesse da AES"),
+                        options = markerOptions(habs = ~ifelse(is.na(habs_incs),0,habs_incs),tp = pluraltp(str_to_title(tp_estabs[tp_estabs$TP_UNIDADE == 42,]$NO_TP_UNIDADE))),
+                        clusterOptions = markerClusterOptions(
+                          iconCreateFunction =   
+                            ~JS(paste0("function (cluster) {    
+                          var conta = cluster.getAllChildMarkers();
+                          var contaa = conta.length;
+                          var c = ' marker-cluster';
+                          /*if (contaa < 10) {
+                                c+= 'small';
+                          } else if (contaa <100) {
+                                c+= 'medium';
+                          } else {
+                                c+= 'large';
+                          }*/
+                          var habs = 0;
+                          for (i =0; i<conta.length;i++) {
+                          habs +=Number(conta[i].options.habs)
+                          }
+                          
+                          var tp = conta[0].options.tp;
+                          
+
+                          return L.divIcon({ 
+                            html: '<div style = \"background-color: ",pegacor(moda(paleta),moda(cor)),";\"><center title=\"'+contaa+' '+tp+' com '+habs+' habilitações\"><i class = \"fa-solid fa-",
+                                       moda(ícone),"\"></i><br>'+contaa+'</center></div>', 
+                            className: 'marker-cluster' + c, 
+                            iconSize: new L.Point(38, 38) });
+                          }"
+                            ))),
+                        group = "Unidades Móveis") %>%
+      addAwesomeMarkers(data=geocnesf%>%dplyr::filter(TP_UNIDADE == tp_estabs[14,]$TP_UNIDADE),icon = ~icones_mapa[ícone],
+                        label =~paste(str_to_title(NO_FANTASIA),"com",habs_incs,"habilitações e incentivos\n de interesse da AES"),
+                        options = markerOptions(habs = ~ifelse(is.na(habs_incs),0,habs_incs),tp = pluraltp(str_to_title(tp_estabs[14,]$NO_TP_UNIDADE))),
+                        clusterOptions = markerClusterOptions(
+                          iconCreateFunction =   
+                            ~JS(paste0("function (cluster) {    
+                          var conta = cluster.getAllChildMarkers();
+                          var contaa = conta.length;
+                          var c = ' marker-cluster';
+                          /*if (contaa < 10) {
+                                c+= 'small';
+                          } else if (contaa <100) {
+                                c+= 'medium';
+                          } else {
+                                c+= 'large';
+                          }*/
+                          var habs = 0;
+                          for (i =0; i<conta.length;i++) {
+                          habs +=Number(conta[i].options.habs)
+                          }
+                          
+                          var tp = conta[0].options.tp;
+                          
+
+                          return L.divIcon({ 
+                            html: '<div style = \"background-color: ",pegacor(moda(paleta),moda(cor)),";\"><center title=\"'+contaa+' '+tp+' com '+habs+' habilitações\"><i class = \"fa-solid fa-",
+                                       moda(ícone),"\"></i><br>'+contaa+'</center></div>', 
+                            className: 'marker-cluster' + c, 
+                            iconSize: new L.Point(38, 38) });
+                          }"
+                            ))),
+                        group = "Outros") %>%
+      
+      
+      addAwesomeMarkers(data=geocnesf%>%dplyr::filter(TP_UNIDADE == tp_estabs[1,]$TP_UNIDADE),icon = ~icones_mapa[ícone],
+                        label =~paste(str_to_title(NO_FANTASIA),"com",habs_incs,"habilitações e incentivos\n de interesse da AES"),
+                        options = markerOptions(habs = ~ifelse(is.na(habs_incs),0,habs_incs),tp = pluraltp(str_to_title(tp_estabs[1,]$NO_TP_UNIDADE))),
+                        clusterOptions = markerClusterOptions(
+                          iconCreateFunction =   
+                            ~JS(paste0("function (cluster) {    
+                          var conta = cluster.getAllChildMarkers();
+                          var contaa = conta.length;
+                          var c = ' marker-cluster';
+                          /*if (contaa < 10) {
+                                c+= 'small';
+                          } else if (contaa <100) {
+                                c+= 'medium';
+                          } else {
+                                c+= 'large';
+                          }*/
+                          var habs = 0;
+                          for (i =0; i<conta.length;i++) {
+                          habs +=Number(conta[i].options.habs)
+                          }
+                          
+                          var tp = conta[0].options.tp;
+                          
+
+                          return L.divIcon({ 
+                            html: '<div style = \"background-color: ",pegacor(moda(paleta),moda(cor)),";\"><center title=\"'+contaa+' '+tp+' com '+habs+' habilitações\"><i class = \"fa-solid fa-",
+                                       moda(ícone),"\"></i><br>'+contaa+'</center></div>', 
+                            className: 'marker-cluster' + c, 
+                            iconSize: new L.Point(38, 38) });
+                          }"
+                            ))),
+                        
+                        group = "Unidades Atenção Básica") %>%
+      addAwesomeMarkers(data=geocnesf%>%dplyr::filter(TP_UNIDADE == tp_estabs[2,]$TP_UNIDADE),icon = ~icones_mapa[ícone],
+                        label =~paste(str_to_title(NO_FANTASIA),"com",habs_incs,"habilitações e incentivos\n de interesse da AES"),
+                        options = markerOptions(habs = ~ifelse(is.na(habs_incs),0,habs_incs),tp = pluraltp(str_to_title(tp_estabs[2,]$NO_TP_UNIDADE))),
+                        clusterOptions = markerClusterOptions(
+                          iconCreateFunction =   
+                            ~JS(paste0("function (cluster) {    
+                          var conta = cluster.getAllChildMarkers();
+                          var contaa = conta.length;
+                          var c = ' marker-cluster';
+                          /*if (contaa < 10) {
+                                c+= 'small';
+                          } else if (contaa <100) {
+                                c+= 'medium';
+                          } else {
+                                c+= 'large';
+                          }*/
+                          var habs = 0;
+                          for (i =0; i<conta.length;i++) {
+                          habs +=Number(conta[i].options.habs)
+                          }
+                          
+                          var tp = conta[0].options.tp;
+                          
+
+                          return L.divIcon({ 
+                            html: '<div style = \"background-color: ",pegacor(moda(paleta),moda(cor)),";\"><center title=\"'+contaa+' '+tp+' com '+habs+' habilitações\"><i class = \"fa-solid fa-",
+                                       moda(ícone),"\"></i><br>'+contaa+'</center></div>', 
+                            className: 'marker-cluster' + c, 
+                            iconSize: new L.Point(38, 38) });
+                          }"
+                            ))),
+                        group = "Unidades Atenção Básica") %>%
+      
+      addPolygons(data= regioes_saude_mapa%>%dplyr::filter(code_health_region %in% c(52001,52009,52010,52012)),fillOpacity = 0.2,smoothFactor = 0.7,
+                  color = paleta5[4],weight=0.7,
+                   group = "Regiões de saúde") %>%
+
+      addLayersControl(
+        baseGroups = c("Regiões de saúde","outros"),
+        overlayGroups = c("Hospitais", "Unidades Atenção Básica", "Unidades Móveis","Clínicas/Unidades de apoio diagnose e terapia\nSADT ISOLADO","Outros"),
+        options = layersControlOptions(collapsed = FALSE),
+        position = "bottomright"
+      )
+    
+    
   })
   
    esconde <- reactiveVal(1)

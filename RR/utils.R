@@ -6,7 +6,31 @@ tabmil <- function(x) {
 }
 
 
+moda <- function(x) {
+  ux <- unique(x)
+  tab <- tabulate(match(x, ux))
+  ux[tab == max(tab)]
+}
 
+
+pluraltp <- function(x){
+  x <- strsplit(x," ")[[1]]
+  for (i in 1:length(x)) {
+    x[i] <- gsub("l$","i",x[i])
+    x[i] <- gsub("r$","re",x[i])
+    x[i] <- paste0(x[i],"s")
+    if (x[i] == "Des"){ x[i] <-  "de"}
+  }
+  if (x[length(x)-1] == "de"){ 
+    x[length(x)] <- gsub("s$","",x[length(x)])
+    }
+  paste0(x, collapse = " ")
+}
+
+
+pegacor <- function(paleta,cor) {
+  get(paste0("paleta",paleta))[cor]
+}
 
 #Funções auxiliares
 

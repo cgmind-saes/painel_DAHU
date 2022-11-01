@@ -71,7 +71,7 @@ geo_estabs <- readRDS("dados/geo_estabs_2022_10_21.rds")
 regioes_saude_mapa <-  geobr::read_health_region()
 #estados< read.csv2...
 inds_dahu <-read.csv2("dados/2012-2017-indicadores_saude_brutos.csv")
-lista_ind_dahu <- read_csv2("dados/lista_saude.csv")
+lista_ind_dahu <- read_csv2("dados/lista_dahu.csv")
 names(lista_ind_dahu$indicador) <- lista_ind_dahu$desc
 
 lista_ind_dahu <- lista_ind_dahu$indicador
@@ -112,29 +112,43 @@ tp_estabs%<>%mutate(aes_destaque = case_when(
 
 tp_icones <- read_csv("dados/estabelecimentos_icones.csv")
 
-tp_estabs%<>%left_join(tp_icones[c("código","ícone")],by = c("TP_UNIDADE" = "código"))
+tp_estabs%<>%left_join(tp_icones[c("código","ícone","paleta","cor")],by = c("TP_UNIDADE" = "código"))
+
 
 tp_estabs[is.na(tp_estabs$ícone),]$ícone <- "star-of-life"
+tp_estabs[is.na(tp_estabs$paleta),]$paleta <- 2
+tp_estabs[is.na(tp_estabs$cor),]$cor <- 4
 #tp_estabs$ícone <- paste0("fa-solid fa-",tp_estabs$ícone)
 
 geocnes$TP_UNIDADE <- as.numeric(geocnes$TP_UNIDADE)
 
 geocnes%<>%left_join(tp_estabs)
 
-geocnesf <- sample_n(geocnes%>%dplyr::filter(grepl("^52",CO_MUNICIPIO_GESTOR),
+geocnesf <- geocnes%>%dplyr::filter(grepl("^52",CO_MUNICIPIO_GESTOR),
                                     aes_destaque == 1)
-                     ,1e3)
 
+#geocnesf <- geocnes
+
+###habilitações e incentivos por CNES
+hi_cnes <- readRDS("dados/habilitacoes_por_cnes.rds")
+
+geocnesf%<>%left_join(hi_cnes%>%select(CNES,habs_incs)%>%
+                        mutate(CNES=as.character(CNES)),
+                      by = c("CO_CNES" = "CNES"))
+
+geocnesf[is.na(geocnesf$habs_incs),]$habs_incs <- 0
 
 # geocnesf$ícone <- lapply(paste0("fa-",geocnesf$ícone),makeAwesomeIcon,library = "fa",
 #                          iconColor = "orange")
 
 
-marcacor <- c("red", "darkred", "lightred", "orange", "beige", "green", "darkgreen", "lightgreen", "blue", "darkblue", "lightblue", "purple", "darkpurple", "pink", "cadetblue", "white", "gray", "lightgray", "black")
+# marcacor <- c("red", "darkred", "lightred", "orange", "beige", "green", "darkgreen", "lightgreen", "blue", "darkblue", "lightblue", "purple", "darkpurple", "pink", "cadetblue", "white", "gray", "lightgray", "black")
+# ##Selecionar 15 - feito com sample(1:19,15)
+# cor15 <- c(6, 12, 17, 9, 13, 19, 2, 5, 8, 14, 10,1, 16,  3, 15)
 
-icones_mapa <- mapply(makeAwesomeIcon,paste0("fa-",unique(tp_estabs$ícone)),library = "fa",
-                            iconColor = c(paleta7,paleta6[1:3]),
-                      markerColor = marcacor[sample(1:19,15)],squareMarker = T,
+icones_mapa <- mapply(makeAwesomeIcon,paste0("fa-",c(tp_icones$ícone,"star-of-life")),library = "fa",
+                            iconColor = mapply(pegacor,c(tp_icones$paleta,2),c(tp_icones$cor,4)),
+                      markerColor = marcacor[cor15],squareMarker = T,
                       SIMPLIFY=F)
 
 class(icones_mapa) <- "leaflet_awesome_icon_set"
@@ -143,6 +157,36 @@ names(icones_mapa) <- unique(tp_estabs$ícone)
 
 
 
+#rl_estab_complementar <- dbGetQuery(con_pd,"select * from cnes.rl_estab_complementar")
+rl_estab_complementar <- readRDS("dados/2022-10-31-rl_estab_complementar.rds")
+
+##sumário unidades leitos
+unid_leitos <- rl_estab_complementar%>%group_by(CO_UNIDADE)%>%summarize(across(contains("QT_"),sum,na.rm=T))%>%mutate(QT_N_SUS = QT_EXIST-QT_SUS,
+                                                                                                                      HPP = ifelse(QT_EXIST>4 & QT_EXIST<31,T,F))
+unid_leitos$CO_CNES <- substr(unid_leitos$CO_UNIDADE,7,13)
+
+geocnesf%<>%left_join(unid_leitos%>%select(-CO_UNIDADE))
+
+geocnesf[is.na(geocnesf$QT_EXIST),]$QT_EXIST <- 0
+
+geocnesf[is.na(geocnesf$QT_SUS),]$QT_SUS <- 0
+
+geocnesf[is.na(geocnesf$QT_N_SUS),]$QT_N_SUS <- 0
+
+geocnesf[is.na(geocnesf$HPP),]$HPP <- F
 
 
 
+
+##Serviços referenciados
+
+
+tb_servico_referenciado <- dbGetQuery(con_pd,"select * from cnes.tb_servico_referenciado")
+
+tb_servico_referenciado$CO_CNES <- substr(tb_servico_referenciado$CO_UNIDADE,7,13)
+
+
+geocnesf%<>%left_join(tb_servico_referenciado%>%select(CO_CNES,TP_SERVICO_REFERENCIADO,CO_SERVICO_REFERENCIADO))
+
+##Serviços cf documentação
+servicos_cnes <- c(120,121,122,129,142,145,146,151)
